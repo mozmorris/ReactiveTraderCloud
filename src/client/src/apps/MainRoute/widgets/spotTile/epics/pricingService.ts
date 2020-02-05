@@ -3,6 +3,7 @@ import { Observable } from 'rxjs'
 import { map, scan, share, retryWhen } from 'rxjs/operators'
 import { PriceMovementTypes } from '../model/priceMovementTypes'
 import { SpotPriceTick } from '../model/spotPriceTick'
+import { debug } from 'rt-util'
 
 const LOG_NAME = 'Pricing Service:'
 const getPriceUpdatesOperationName = 'getPriceUpdates'
@@ -32,7 +33,8 @@ export default class PricingService {
   }
 
   private static createSpotPriceStream = (serviceClient: ServiceClient, request: Request) => {
-    console.debug(LOG_NAME, `Subscribing to spot price stream for [${request.symbol}]`)
+    debug(LOG_NAME, `Subscribing to spot price stream for [${request.symbol}]`)
+
     return serviceClient
       .createStreamOperation<RawPrice, Request>('pricing', getPriceUpdatesOperationName, request)
       .pipe(
@@ -53,7 +55,10 @@ export default class PricingService {
   getSpotPriceStream(request: Request) {
     const { symbol } = request
     if (!this.cachedSpotStreamBySymbol.has(symbol)) {
-      this.cachedSpotStreamBySymbol.set(symbol, PricingService.createSpotPriceStream(this.serviceClient, request))
+      this.cachedSpotStreamBySymbol.set(
+        symbol,
+        PricingService.createSpotPriceStream(this.serviceClient, request),
+      )
     }
     return this.cachedSpotStreamBySymbol.get(symbol)!
   }
