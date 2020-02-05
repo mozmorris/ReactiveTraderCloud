@@ -49,7 +49,7 @@ const Loadable: React.FC<Props> = ({
   }, [])
 
   return status === ServiceConnectionStatus.CONNECTED ? (
-    <Content minWidth={`${minWidth}rem`}>{render()}</Content>
+    <Content minWidth={minWidth !== undefined ? `${minWidth}rem` : undefined}>{render()}</Content>
   ) : (
     <LoadableStyle
       minWidth={`${minWidth}rem`}
